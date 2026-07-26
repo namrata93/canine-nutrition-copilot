@@ -24,16 +24,55 @@ export interface NutrientContribution {
   amount: number;
 }
 
+/**
+ * A commonly cited healthy calcium-to-phosphorus range for adult dogs. NRC
+ * centers around ~1.2–1.4:1 and AAFCO caps the ratio at 2:1; 1.0–2.0 is a
+ * reasonable "not obviously off" window for a maintenance diet.
+ */
+export const RECOMMENDED_CA_P_RANGE = { min: 1.0, max: 2.0 } as const;
+
+export type BalanceStatus = "low" | "in-range" | "high" | "unknown";
+
+export interface CalciumPhosphorusAssessment {
+  /** Calcium divided by phosphorus, or `null` if phosphorus is zero. */
+  ratio: number | null;
+  status: BalanceStatus;
+  recommended: { min: number; max: number };
+}
+
 export interface RecipeAnalysis {
   totals: Record<NutrientKey, number>;
   /** Total weight of the recipe in grams. */
   totalGrams: number;
   /**
-   * Calcium-to-phosphorus ratio. This is one of the most important balance
-   * checks in a raw diet, which is why it gets first-class treatment here.
-   * `null` when there is no phosphorus to divide by.
+   * Calcium-to-phosphorus balance. One of the most important checks in a raw
+   * diet, so it gets first-class treatment here rather than being left as a
+   * raw number the caller has to interpret.
    */
-  calciumPhosphorusRatio: number | null;
+  calciumPhosphorus: CalciumPhosphorusAssessment;
+}
+
+/** Classify a calcium:phosphorus ratio against the recommended range. */
+export function assessCalciumPhosphorus(
+  ratio: number | null,
+): CalciumPhosphorusAssessment {
+  const recommended = {
+    min: RECOMMENDED_CA_P_RANGE.min,
+    max: RECOMMENDED_CA_P_RANGE.max,
+  };
+
+  let status: BalanceStatus;
+  if (ratio === null) {
+    status = "unknown";
+  } else if (ratio < recommended.min) {
+    status = "low";
+  } else if (ratio > recommended.max) {
+    status = "high";
+  } else {
+    status = "in-range";
+  }
+
+  return { ratio, status, recommended };
 }
 
 /**
@@ -60,12 +99,16 @@ export function analyzeRecipe(
     }
   }
 
-  const calciumPhosphorusRatio =
+  const ratio =
     totals.phosphorus_mg > 0
       ? totals.calcium_mg / totals.phosphorus_mg
       : null;
 
-  return { totals, totalGrams, calciumPhosphorusRatio };
+  return {
+    totals,
+    totalGrams,
+    calciumPhosphorus: assessCalciumPhosphorus(ratio),
+  };
 }
 
 /**

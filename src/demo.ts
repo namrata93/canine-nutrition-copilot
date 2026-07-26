@@ -13,9 +13,11 @@ for (const [key, meta] of Object.entries(NUTRIENTS)) {
   console.log(`  ${meta.label.padEnd(12)} ${value.toFixed(2).padStart(9)} ${meta.unit}`);
 }
 
-if (analysis.calciumPhosphorusRatio !== null) {
+const cap = analysis.calciumPhosphorus;
+if (cap.ratio !== null) {
   console.log(
-    `\n  Calcium : Phosphorus  =  ${analysis.calciumPhosphorusRatio.toFixed(2)} : 1`,
+    `\n  Calcium : Phosphorus  =  ${cap.ratio.toFixed(2)} : 1  (${cap.status}, ` +
+      `target ${cap.recommended.min}–${cap.recommended.max})`,
   );
 }
 

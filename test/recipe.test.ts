@@ -47,9 +47,11 @@ describe("recipe aggregation", () => {
 
   it("reports a calcium:phosphorus ratio for the sample recipe", () => {
     const analysis = analyzeRecipe(sampleRecipeOunces, ingredientDatabase);
-    expect(analysis.calciumPhosphorusRatio).not.toBeNull();
+    expect(analysis.calciumPhosphorus.ratio).not.toBeNull();
     // Chicken backs are bone-in, so this recipe should be calcium-rich.
-    expect(analysis.calciumPhosphorusRatio!).toBeGreaterThan(1);
+    expect(analysis.calciumPhosphorus.ratio!).toBeGreaterThan(1);
+    // ...and land inside the healthy range (it's ~1.57:1).
+    expect(analysis.calciumPhosphorus.status).toBe("in-range");
   });
 
   it("computes a known-good total for calories", () => {
