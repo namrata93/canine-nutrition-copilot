@@ -1,0 +1,22 @@
+{
+  "name": "canine-nutrition-copilot",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A deterministic nutrition engine for raw and home-prepared canine diets, with an LLM as the interface rather than the calculator.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "demo": "tsx src/demo.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

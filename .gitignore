@@ -1,0 +1,17 @@
+# Local or proprietary workbook data
+data/*.xlsx
+data/*.xls
+
+# Node / TypeScript
+node_modules/
+dist/
+.env
+.env.*
+
+# Python inspection tooling
+__pycache__/
+*.pyc
+.venv/
+
+# macOS
+.DS_Store
