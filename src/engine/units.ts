@@ -21,8 +21,23 @@ export function isMassUnit(unit: string): unit is MassUnit {
   return unit in GRAMS_PER_UNIT;
 }
 
-/** Convert an amount in a supported mass unit to grams. */
+/**
+ * Convert an amount in a supported mass unit to grams.
+ *
+ * Validates at runtime as well as compile time: ingredient amounts often come
+ * from spreadsheets, forms, or (eventually) an LLM, so a bad value should fail
+ * loudly here rather than silently poison a nutrient total downstream.
+ */
 export function toGrams(amount: number, unit: MassUnit): number {
+  if (!isMassUnit(unit)) {
+    throw new Error(`Unsupported unit: "${unit}"`);
+  }
+  if (!Number.isFinite(amount)) {
+    throw new Error(`Amount must be a finite number, got: ${amount}`);
+  }
+  if (amount < 0) {
+    throw new Error(`Amount cannot be negative, got: ${amount}`);
+  }
   return amount * GRAMS_PER_UNIT[unit];
 }
 
